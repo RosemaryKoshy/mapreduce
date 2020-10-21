@@ -1,6 +1,7 @@
 # Links
 
 * [MapReduce Paper](https://research.cs.wisc.edu/areas/os/Qual/papers/map-reduce.pdf)
+* [Wikipedia MapReduce Examples](https://en.wikipedia.org/wiki/MapReduce#Examples)
 * [GNU C Library Documentation](https://www.gnu.org/software/libc/manual/html_mono/libc.html)
 * [POSIX standards](https://pubs.opengroup.org/onlinepubs/9699919799/)
 * [The Linux Manual](https://www.kernel.org/doc/man-pages/)
