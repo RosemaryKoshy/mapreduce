@@ -1,7 +1,9 @@
 # Links
 
 [MapReduce Paper](https://research.cs.wisc.edu/areas/os/Qual/papers/map-reduce.pdf)
+
 [GNU C Library Documentation](https://www.gnu.org/software/libc/manual/html_mono/libc.html)
+
 [POSIX standards](https://pubs.opengroup.org/onlinepubs/9699919799/)
 
 # Map Reduce
