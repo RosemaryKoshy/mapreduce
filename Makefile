@@ -29,7 +29,7 @@ $(TARGET): $(SRC)
 	$(CXX) $(CXX_FLAGS) -o $(TARGET) $^
 
 clean:
-	$(RM) $(TARGET)
+	$(RM) $(TEST) $(TARGET)
 
 # the following two targets run the test and detect leaks
 sanitize: $(SRC)
