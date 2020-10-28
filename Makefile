@@ -36,12 +36,12 @@ clean:
 sanitize: $(SRC)
 	$(CXX) $(CXX_NOSAN) -o $(TEST) $^
 	./$(TEST) $(INPUT) > $(OUTPUT)
-	$(DIFF) $(REFERENCE) $(OUTPUT)
+	sort $(OUTPUT) | $(DIFF) $(REFERENCE) -
 
 grind: $(SRC)
 	$(CXX) $(CXX_NOSAN) -o $(TEST) $^
 	$(GRIND) ./$(TEST) $(INPUT) > $(OUTPUT)
-	$(DIFF) $(REFERENCE) $(OUTPUT)
+	sort $(OUTPUT) | $(DIFF) $(REFERENCE) -
 
 # this one gives lots of warnings
 warn: $(SRC)
