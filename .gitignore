@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+mapreduce
+test_mapreduce
+wc
+
+# Test output
+output.txt
+
+# IDE data files
+*.iml
+*.xml
