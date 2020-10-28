@@ -13,7 +13,7 @@ TEST      = wc
 SRC       = $(TEST).cc $(TARGET).cc
 
 RM        = rm -fv
-DIFF      = diff -s
+DIFF      = diff -s --color
 INPUT     = input.txt
 OUTPUT    = output.txt
 REFERENCE = desired.txt
