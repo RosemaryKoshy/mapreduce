@@ -4,10 +4,12 @@ CXX_W     = -Wall -Wextra -Wpedantic
 CXX_DEBUG = -ggdb3 -Og -DDEBUG
 # you may need to install libs for the sanitizers
 CXX_SAN   = -fsanitize=address,leak,undefined
+
 CXX_NOSAN = $(CXX_STD) $(CXX_W) $(CXX_DEBUG) -pthread
 CXX_FLAGS = $(CXX_NOSAN) $(CXX_SAN)
+
 TARGET    = mapreduce
-TEST      = test_$(TARGET)
+TEST      = wc.cc
 SRC       = $(TEST).cc $(TARGET).cc
 
 RM        = rm -fv
@@ -20,7 +22,6 @@ WARN      = clang++ -Weverything -Wno-c++98-compat
 TIDY      = clang-tidy -extra-arg=$(CXX_STD)
 FORMAT    = clang-format -style="{BasedOnStyle: google, IndentWidth: 4}" -i --verbose
 LINT      = cpplint --filter=-legal/copyright
-
 
 
 all: $(TARGET)
