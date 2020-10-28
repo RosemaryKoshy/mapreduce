@@ -12,20 +12,21 @@
 using namespace std;
 using namespace MapReduce;
 
-void map(const char *file_name) {
-    FILE *fp = fopen(file_name, "r");
-    assert(fp != nullptr);
+void map(const char *filename) {
+    FILE *stream = fopen(filename, "r");
+    assert(stream != nullptr);
 
     char *line = nullptr;
-    size_t size = 0;
-    while (getline(&line, &size, fp) != -1) {
-        char *token, *dummy = line;
-        while ((token = strsep(&dummy, " \t\n\r")) != nullptr) {
-            MR_Emit(token, "1");
+    size_t len = 0;
+    while (getline(&line, &len, stream) > -1) {
+        char *key, *string = line;
+        while ((key = strsep(&string, " \t\n\r")) != nullptr) {
+            MR_Emit(key, "1");
         }
     }
+
     free(line);
-    fclose(fp);
+    fclose(stream);
 }
 
 void reduce(const string &key, getter_t get_next, int partition_number) {
