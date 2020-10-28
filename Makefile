@@ -14,6 +14,7 @@ RM        = rm -fv
 DIFF      = diff -s
 INPUT     = input.txt
 OUTPUT    = output.txt
+REFERENCE = desired.txt
 GRIND     = valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes
 WARN      = clang++ -Weverything -Wno-c++98-compat
 TIDY      = clang-tidy -extra-arg=$(CXX_STD)
@@ -33,13 +34,13 @@ clean:
 # the following two targets run the test and detect leaks
 sanitize: $(SRC)
 	$(CXX) $(CXX_NOSAN) -o $(TEST) $^
-	./$(TEST) < $(INPUT) > $(OUTPUT)
-	$(DIFF) $(INPUT) $(OUTPUT)
+	./$(TEST) $(INPUT) > $(OUTPUT)
+	$(DIFF) $(REFERENCE) $(OUTPUT)
 
 grind: $(SRC)
 	$(CXX) $(CXX_NOSAN) -o $(TEST) $^
-	$(GRIND) ./$(TEST) < $(INPUT) > $(OUTPUT)
-	$(DIFF) $(INPUT) $(OUTPUT)
+	$(GRIND) ./$(TEST) $(INPUT) > $(OUTPUT)
+	$(DIFF) $(REFERENCE) $(OUTPUT)
 
 # this one gives lots of warnings
 warn: $(SRC)
