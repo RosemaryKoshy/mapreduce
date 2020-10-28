@@ -1,5 +1,5 @@
 // To build:
-// g++-8 -Wall -Wextra -pedantic  --std=c++17 -g  -pthread mapreduce.cc  wc.cc -o wc
+// g++ -Wall -Wextra -pedantic --std=c++17 -g -pthread mapreduce.cc wc.cc -o wc
 
 #include <cassert>
 #include <cstdio>
