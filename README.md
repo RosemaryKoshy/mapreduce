@@ -6,6 +6,22 @@
 * [POSIX standards](https://pubs.opengroup.org/onlinepubs/9699919799/)
 * [The Linux Manual](https://www.kernel.org/doc/man-pages/)
 
+# Project 3: MapReduce
+
+For this project we will loosely follow the instructions in OSTEP's Map/Reduce project.
+
+Here are the key things to know:
+
+1. The API presented in the book is in C. You're welcome to use it, but I find it needlessly difficult. In particular, solving this assignment in C++ can avoid most or all of the memory allocations (and its associated bugs). I've provided a comparable C++ header below that you can use instead of the C header (but you may modify neither).
+
+1. Even translating the API from C to C++, I still don't find the API very intuitive. It required (at least in my solution) to store some data as global variables because there was no other way to pass them to some predefined functions. You are permitted to do the same, but be judicious.
+
+1. This time, the github repository provides no tests. You are required to write your own test(s). Feel free to start with the book's word count test, but you'll have to implement at least one original test of your own. You can even implement it before writing map reduce, if you're following the TDD methodology. You can find inspiration for Map/Reduce applications in the original paper or online.
+
+1. Also keep in mind that the book's definition of Map/Reduce is not exactly the same as the one commonly referred to in distributed settings. For example, distributed MapReduce assumes each mapper writes to its own local storage, as opposed to the shared data structure required by the book's project. If you're still confused about the architecture, ask!
+
+
+
 # Map Reduce
 
 In 2004, engineers at Google introduced a new paradigm for large-scale
