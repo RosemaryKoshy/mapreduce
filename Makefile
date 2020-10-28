@@ -2,34 +2,57 @@ CXX       = g++
 CXX_STD   = -std=c++17
 CXX_W     = -Wall -Wextra -Wpedantic
 CXX_DEBUG = -ggdb3 -Og -DDEBUG
+# you may need to install libs for the sanitizers
 CXX_SAN   = -fsanitize=address,leak,undefined
 CXX_NOSAN = $(CXX_STD) $(CXX_W) $(CXX_DEBUG)
 CXX_FLAGS = $(CXX_NOSAN) $(CXX_SAN)
 TARGET    = mapreduce
 TEST      = test_$(TARGET)
-SRC       = $(TARGET).cc $(TEST).cc
+SRC       = $(TEST).cc $(TARGET).cc
+
 RM        = rm -fv
+DIFF      = diff -s
+INPUT     = input.txt
+OUTPUT    = output.txt
+GRIND     = valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes
+WARN      = clang++ -Weverything -Wno-c++98-compat
+TIDY      = clang-tidy -extra-arg=$(CXX_STD)
+FORMAT    = clang-format -style="{BasedOnStyle: google, IndentWidth: 4}" -i --verbose
+LINT      = cpplint --filter=-legal/copyright
+
+
 
 all: $(TARGET)
 
 $(TARGET): $(SRC)
-	$(CXX) -o $(TARGET) $(SRC) $(CXX_FLAGS)
+	$(CXX) $(CXX_FLAGS) -o $(TARGET) $^
 
 clean:
 	$(RM) $(TARGET)
 
+# the following two targets run the test and detect leaks
+sanitize: $(SRC)
+	$(CXX) $(CXX_NOSAN) -o $(TEST) $^
+	./$(TEST) < $(INPUT) > $(OUTPUT)
+	$(DIFF) $(INPUT) $(OUTPUT)
+
 grind: $(SRC)
-	$(CC) $(C_NOSAN) -o $(TARGET) $(SRC)
-	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(TARGET)
+	$(CXX) $(CXX_NOSAN) -o $(TEST) $^
+	$(GRIND) ./$(TEST) < $(INPUT) > $(OUTPUT)
+	$(DIFF) $(INPUT) $(OUTPUT)
 
+# this one gives lots of warnings
 warn: $(SRC)
-	clang++ $(CXX_FLAGS) -Weverything -Wno-c++98-compat -o $(TARGET) $(SRC)
+	$(WARN) -o $(TEST) $^
 
-tidy: $(FILES)
-	clang-tidy -extra-arg=$(CXX_STD) $(SRC)
+# this one gives even more bonus warnings
+tidy: $(SRC)
+	$(TIDY) $^
 
-format: $(FILES)
-	clang-format -style="{BasedOnStyle: google, IndentWidth: 4}" -i --verbose $(SRC)
+# formats the code for consistent style
+format: $(SRC)
+	$(FORMAT) $^
 
-lint: $(FILES)
-	cpplint --filter=-legal/copyright $(SRC)
+# more warnings
+lint: $(SRC)
+	$(LINT) $^
