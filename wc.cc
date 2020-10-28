@@ -13,13 +13,13 @@ using namespace MapReduce;
 
 void map(const char *file_name) {
     FILE *fp = fopen(file_name, "r");
-    assert(fp != NULL);
+    assert(fp != nullptr);
 
-    char *line = NULL;
+    char *line = nullptr;
     size_t size = 0;
     while (getline(&line, &size, fp) != -1) {
         char *token, *dummy = line;
-        while ((token = strsep(&dummy, " \t\n\r")) != NULL) {
+        while ((token = strsep(&dummy, " \t\n\r")) != nullptr) {
             MR_Emit(token, "1");
         }
     }
@@ -30,7 +30,7 @@ void map(const char *file_name) {
 void reduce(const string &key, getter_t get_next, int partition_number) {
     int count = 0;
     string value;
-    while ((value = get_next(key, partition_number)) != "")
+    while (!(value = get_next(key, partition_number)).empty())
         count++;
     std::cout << key << " " << count << std::endl;
 }
