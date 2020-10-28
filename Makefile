@@ -9,7 +9,7 @@ CXX_NOSAN = $(CXX_STD) $(CXX_W) $(CXX_DEBUG) -pthread
 CXX_FLAGS = $(CXX_NOSAN) $(CXX_SAN)
 
 TARGET    = mapreduce
-TEST      = wc.cc
+TEST      = wc
 SRC       = $(TEST).cc $(TARGET).cc
 
 RM        = rm -fv
