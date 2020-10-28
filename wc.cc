@@ -33,9 +33,9 @@ void reduce(const string &key, getter_t get_next, int partition_number) {
     int count = 0;
     string value;
     while (!(value = get_next(key, partition_number)).empty()) count++;
-    std::cout << key << " " << count << std::endl;
+    std::cout << key << ' ' << count << std::endl;
 }
 
 int main(int argc, char *argv[]) {
-    MR_Run(argc, argv, map, 1, reduce, 1, MR_DefaultHashPartition);
+    MR_Run(argc, argv, map, 10, reduce, 10, MR_DefaultHashPartition);
 }
