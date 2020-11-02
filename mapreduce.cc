@@ -9,7 +9,7 @@
 #include <vector>
 
 using namespace MapReduce;
-int num_part;
+int num_part = 0;
 // Use part[partkey][key].emplace_back(value)
 using PART =
 std::vector<std::unordered_map<std::string, std::vector<std::string>>>;
@@ -37,11 +37,8 @@ std::string get(const std::string &key, int part_num) {
 void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
                        int num_mappers, MapReduce::reducer_t reduce,
                        int num_reducers, MapReduce::partitioner_t partition) {
-    num_part = num_reducers;
-    parts.resize(static_cast<size_t>(num_part));
-
     for(int i = 0; i < argc; i++){
-        if(threadQueue.size() >= num_mappers){
+        if((int)threadQueue.size() >= num_mappers){
             threadQueue.front().get();
             threadQueue.pop();
         }
@@ -52,8 +49,19 @@ void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
         threadQueue.pop();
     }
 
-    for(int i = 0; i < num_reducers; i++){
-        threadQueue.emplace(std::async(std::launch::async, reduce, NEEDKEY, get, partitioner(NEEDKEY, num_part)));
+    std::vector<std::string> keys;
+    for(int i = 0; i < (int)parts.size(); i++) {
+        for (auto key: parts[i]){
+            keys.emplace_back(key.first);
+        }
+    }
+
+    for(int i = 0; i < num_part; i++){
+        if((int)threadQueue.size() >= num_reducers){
+            threadQueue.front().get();
+            threadQueue.pop();
+        }
+        threadQueue.emplace(std::async(std::launch::async, reduce, keys[i], get, partition(keys[i], num_part)));
     }
 
     while(!threadQueue.empty()){
@@ -64,6 +72,7 @@ void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
 }
 
 void MapReduce::MR_Emit(const std::string &key, const std::string &value) {
+    num_part++;
     unsigned long partKey = partitioner(key, num_part);
     int exists = parts[partKey].count(key);
     if (exists > 0){
