@@ -19,8 +19,8 @@ static void map(const char *filename) {
     char *line = nullptr;
     size_t len = 0;
     while (getline(&line, &len, stream) > -1) {
-        char *key, *string = line;
-        while ((key = strsep(&string, " \t\n\r")) != nullptr) {
+        char *key, *str = line;
+        while ((key = strsep(&str, " \t\n\r")) != nullptr) {
             MR_Emit(key, "1");
         }
     }
