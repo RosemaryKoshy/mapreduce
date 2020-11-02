@@ -1,5 +1,9 @@
-"you'll have to implement at least one original test of your own"
+TESTING "you'll have to implement at least one original test of your own"
     add distributed grep test
         The map function emits a line if it matches a supplied pattern.
         The reduce function is an identity function that just copies
         the supplied intermediate data to the output.
+
+mapreduce.cc FUNCTIONS
+
+THREADING
