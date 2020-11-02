@@ -16,6 +16,7 @@ std::vector<std::unordered_map<std::string, std::vector<std::string>>>;
 PART parts;
 std::queue<std::future<void>> threadQueue;
 
+/// return all values that produced the same key in order
 std::string get_next(const std::string &key, int partition_number) {
     // if value match found for key then return it
 
