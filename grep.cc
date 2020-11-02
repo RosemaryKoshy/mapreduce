@@ -9,7 +9,7 @@
 using namespace std;
 using namespace MapReduce;
 
-void map(const char *filename) {
+static void map(const char *filename) {
     FILE *stream = fopen(filename, "r");
     assert(stream != nullptr);
 
@@ -25,7 +25,7 @@ void map(const char *filename) {
     fclose(stream);
 }
 
-void reduce(const string &key, getter_t get_next, int partition_number) {
+static void reduce(const string &key, getter_t get_next, int partition_number) {
     while (!(get_next(key, partition_number)).empty()) std::cout << key;
 }
 
