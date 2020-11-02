@@ -24,7 +24,7 @@ unsigned long partitioner(const std::string &key, int num_partitions) {
     return MR_DefaultHashPartition(key, num_partitions);
 }
 
-std::string get(const std::string &key, int part_num) {
+std::string getter(const std::string &key, int part_num) {
     if (!parts[part_num].at(key).empty()) {
         std::string value = parts[part_num].at(key).front();
         deleteVal(key, part_num);
