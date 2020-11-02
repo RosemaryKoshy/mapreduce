@@ -31,6 +31,7 @@ static void map(const char *filename) {
 
 static void reduce(const string &key, getter_t get_next, int partition_number) {
     int count = 0;
+    // for all values that produced the same keys
     for (string value; !(value = get_next(key, partition_number)).empty();) {
         count++;
     }
