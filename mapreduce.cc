@@ -1,8 +1,3 @@
-/**
- * mapreduce.cc
- * Talib Pierson
- * 20 October 2020
- */
 #include "mapreduce.hh"
 
 #include <future>
@@ -18,14 +13,14 @@ int num_part;
 using PART =
 std::vector<std::unordered_map<std::string, std::vector<std::string>>>;
 PART parts;
+std::queue<std::future<PART>> threadQueue;
 
 void deleteVal(const std::string &key, int part_num) {
     parts[part_num].at(key).erase(parts[part_num].at(key).begin());
 }
 
 unsigned long partitioner(const std::string &key, int num_partitions) {
-    unsigned long hash = std::hash<std::string>{}(key);
-    return hash % num_partitions;
+    return MR_DefaultHashPartition(key, num_partitions);
 }
 
 std::string get(const std::string &key, int part_num) {
@@ -37,22 +32,34 @@ std::string get(const std::string &key, int part_num) {
     return "";
 }
 
-reducer_t reduce(const std::string &key, getter_t getter,
-                 int partition_number) {
-    return MapReduce::reducer_t();
-}
 
 void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
                        int num_mappers, MapReduce::reducer_t reduce,
                        int num_reducers, MapReduce::partitioner_t partition) {
-    std::queue<std::future<PART>> threadQueue;
     num_part = num_reducers;
     parts.resize(static_cast<size_t>(num_part));
+
+    for(int i = 0; i < argc; i++){
+        threadQueue.emplace(std::async(std::launch::async, map, argv[i]));
+    }
+
+
 }
 
-void MapReduce::MR_Emit(const std::string &key, const std::string &value) {}
+void MapReduce::MR_Emit(const std::string &key, const std::string &value) {
+    unsigned long partKey = partitioner(key, num_part);
+    int exists = parts[partKey].count(key);
+    if (exists > 0){
+        parts[partKey][key].emplace_back(value);
+    }
+    else{
+        auto insert = std::pair<std::string, std::vector<std::string>>(key, {value});
+        parts[partKey].insert(insert);
+    }
+}
 
 unsigned long MapReduce::MR_DefaultHashPartition(const std::string &key,
                                                  int num_partitions) {
-    return 0;
+    unsigned long hash = std::hash<std::string>{}(key);
+    return hash % num_partitions;
 }
