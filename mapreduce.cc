@@ -14,7 +14,7 @@ int num_part = 0;
 using PART =
 std::vector<std::unordered_map<std::string, std::vector<std::string>>>;
 PART parts;
-std::queue<std::future<PART>> threadQueue;
+std::queue<std::future<void>> threadQueue;
 
 void deleteVal(const std::string &key, int part_num) {
     parts[part_num].at(key).erase(parts[part_num].at(key).begin());
@@ -37,6 +37,8 @@ std::string getter(const std::string &key, int part_num) {
 void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
                        int num_mappers, MapReduce::reducer_t reduce,
                        int num_reducers, MapReduce::partitioner_t partition) {
+    mapper_t mapper = std::move(map);
+    partitioner_t partr = std::move(partition);
     for(int i = 0; i < argc; i++){
         if((int)threadQueue.size() >= num_mappers){
             threadQueue.front().get();
@@ -61,7 +63,7 @@ void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
             threadQueue.front().get();
             threadQueue.pop();
         }
-        threadQueue.emplace(std::async(std::launch::async, reduce, keys[i], get, partition(keys[i], num_part)));
+        threadQueue.emplace(std::async(std::launch::async, reduce, keys[i], getter, partr(keys[i], num_part)));
     }
 
     while(!threadQueue.empty()){
