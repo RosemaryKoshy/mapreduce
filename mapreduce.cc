@@ -37,8 +37,6 @@ std::string getter(const std::string &key, int part_num) {
 void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
                        int num_mappers, MapReduce::reducer_t reduce,
                        int num_reducers, MapReduce::partitioner_t partition) {
-    mapper_t mapper = std::move(map);
-    partitioner_t partr = std::move(partition);
     for(int i = 0; i < argc; i++){
         if((int)threadQueue.size() >= num_mappers){
             threadQueue.front().get();
@@ -63,7 +61,7 @@ void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
             threadQueue.front().get();
             threadQueue.pop();
         }
-        threadQueue.emplace(std::async(std::launch::async, reduce, keys[i], getter, partr(keys[i], num_part)));
+        threadQueue.emplace(std::async(std::launch::async, reduce, keys[i], getter, partition(keys[i], num_part)));
     }
 
     while(!threadQueue.empty()){
