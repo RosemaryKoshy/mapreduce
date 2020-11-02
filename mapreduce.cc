@@ -16,6 +16,17 @@ std::vector<std::unordered_map<std::string, std::vector<std::string>>>;
 PART parts;
 std::queue<std::future<void>> threadQueue;
 
+std::string get_next(const std::string &key, int partition_number) {
+    // if value match found for key then return it
+
+    // so we have all the partitions and we need a string
+    // we'll somehow traverse through in sorted order?
+    // which may involve some c++ sort method
+
+    // else return empty string (value not found for key)
+    return "";
+}
+
 void deleteVal(const std::string &key, int part_num) {
     parts[part_num].at(key).erase(parts[part_num].at(key).begin());
 }
