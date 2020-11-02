@@ -42,4 +42,5 @@ static void reduce(const string &key, getter_t get_next, int partition_number) {
 
 int main(int argc, char *argv[]) {
     MR_Run(argc, argv, map, 10, reduce, 10, MR_DefaultHashPartition);
+    return EXIT_SUCCESS;
 }
