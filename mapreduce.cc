@@ -20,10 +20,6 @@ void deleteVal(const std::string &key, int part_num) {
     parts[part_num].at(key).erase(parts[part_num].at(key).begin());
 }
 
-unsigned long partitioner(const std::string &key, int num_partitions) {
-    return MR_DefaultHashPartition(key, num_partitions);
-}
-
 std::string get(const std::string &key, int part_num) {
     if (!parts[part_num].at(key).empty()) {
         std::string value = parts[part_num].at(key).front();
@@ -32,7 +28,6 @@ std::string get(const std::string &key, int part_num) {
     }
     return "";
 }
-
 
 void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
                        int num_mappers, MapReduce::reducer_t reduce,
@@ -64,7 +59,7 @@ void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
 }
 
 void MapReduce::MR_Emit(const std::string &key, const std::string &value) {
-    unsigned long partKey = partitioner(key, num_part);
+    unsigned long partKey = MR_DefaultHashPartition(key, num_part);
     int exists = parts[partKey].count(key);
     if (exists > 0){
         parts[partKey][key].emplace_back(value);
