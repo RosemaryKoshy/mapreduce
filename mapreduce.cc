@@ -44,7 +44,15 @@ std::string getter(const std::string &key, int part_num) {
     return "";
 }
 
-
+/**
+ * @param argc          argument count (number of files + 1)
+ * @param argv          argument array (caller + filenames array)
+ * @param map           map function
+ * @param num_mappers   mapper thread count
+ * @param reduce        reduce function
+ * @param num_reducers  reducer thread count
+ * @param partition     partition function
+ */
 void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
                        int num_mappers, MapReduce::reducer_t reduce,
                        int num_reducers, MapReduce::partitioner_t partition) {
