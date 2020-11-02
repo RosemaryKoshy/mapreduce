@@ -33,25 +33,44 @@ std::string get(const std::string &key, int part_num) {
     return "";
 }
 
+
 void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
                        int num_mappers, MapReduce::reducer_t reduce,
                        int num_reducers, MapReduce::partitioner_t partition) {
     num_part = num_reducers;
     parts.resize(static_cast<size_t>(num_part));
 
-    for (int i = 0; i < argc; i++) {
+    for(int i = 0; i < argc; i++){
+        if(threadQueue.size() >= num_mappers){
+            threadQueue.front().get();
+            threadQueue.pop();
+        }
         threadQueue.emplace(std::async(std::launch::async, map, argv[i]));
     }
+    while(!threadQueue.empty()){
+        threadQueue.front().get();
+        threadQueue.pop();
+    }
+
+    for(int i = 0; i < num_reducers; i++){
+        threadQueue.emplace(std::async(std::launch::async, reduce, NEEDKEY, get, partitioner(NEEDKEY, num_part)));
+    }
+
+    while(!threadQueue.empty()){
+        threadQueue.front().get();
+        threadQueue.pop();
+    }
+
 }
 
 void MapReduce::MR_Emit(const std::string &key, const std::string &value) {
     unsigned long partKey = partitioner(key, num_part);
     int exists = parts[partKey].count(key);
-    if (exists > 0) {
+    if (exists > 0){
         parts[partKey][key].emplace_back(value);
-    } else {
-        auto insert =
-                std::pair<std::string, std::vector<std::string>>(key, {value});
+    }
+    else{
+        auto insert = std::pair<std::string, std::vector<std::string>>(key, {value});
         parts[partKey].insert(insert);
     }
 }
