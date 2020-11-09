@@ -60,13 +60,14 @@ void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
                        int num_reducers, MapReduce::partitioner_t partition) {
     num_part = num_reducers;
     parts.resize(1000);
-    for(int i = 0; i < 1; i++){
+    for(int i = 1; i < argc; i++){
         /*if((int)threadQueue.size() >= num_mappers){
             threadQueue.front().get();
             threadQueue.pop();
         }
         threadQueue.emplace(std::async(std::launch::async, map, argv[i]));
         */
+        std::cout << argv[i];
         map(argv[i]);
     }
     /*while(!threadQueue.empty()){
@@ -81,7 +82,7 @@ void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
         }
     }
     for(int i = 0; i < (int)keys.size(); i++){
-        std::cout << keys[i];
+        reduce(keys[i], getter, partition(keys[i], num_part));
     }
     /*for(int i = 0; i < num_part; i++){
         if((int)threadQueue.size() >= num_reducers){
