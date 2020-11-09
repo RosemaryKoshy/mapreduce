@@ -2,6 +2,7 @@
 
 #include <future>
 #include <queue>
+#include <iostream>
 #include <string>
 #include <thread>
 #include <unordered_map>
@@ -57,26 +58,32 @@ std::string getter(const std::string &key, int part_num) {
 void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
                        int num_mappers, MapReduce::reducer_t reduce,
                        int num_reducers, MapReduce::partitioner_t partition) {
-    for(int i = 0; i < argc; i++){
-        if((int)threadQueue.size() >= num_mappers){
+    num_part = num_reducers;
+    parts.resize(1000);
+    for(int i = 0; i < 1; i++){
+        /*if((int)threadQueue.size() >= num_mappers){
             threadQueue.front().get();
             threadQueue.pop();
         }
         threadQueue.emplace(std::async(std::launch::async, map, argv[i]));
+        */
+        map(argv[i]);
     }
-    while(!threadQueue.empty()){
+    /*while(!threadQueue.empty()){
         threadQueue.front().get();
         threadQueue.pop();
-    }
+    }*/
 
     std::vector<std::string> keys;
     for(int i = 0; i < (int)parts.size(); i++) {
-        for (auto key: parts[i]){
+        for (auto key: parts[i]) {
             keys.emplace_back(key.first);
         }
     }
-
-    for(int i = 0; i < num_part; i++){
+    for(int i = 0; i < (int)keys.size(); i++){
+        std::cout << keys[i];
+    }
+    /*for(int i = 0; i < num_part; i++){
         if((int)threadQueue.size() >= num_reducers){
             threadQueue.front().get();
             threadQueue.pop();
@@ -87,12 +94,11 @@ void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
     while(!threadQueue.empty()){
         threadQueue.front().get();
         threadQueue.pop();
-    }
+    }*/
 
 }
 
 void MapReduce::MR_Emit(const std::string &key, const std::string &value) {
-    num_part++;
     unsigned long partKey = partitioner(key, num_part);
     int exists = parts[partKey].count(key);
     if (exists > 0){
