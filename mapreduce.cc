@@ -2,16 +2,14 @@
 
 #include <future>
 #include <queue>
-#include <iostream>
 #include <string>
-#include <thread>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
 using namespace MapReduce;
 int num_part = 0;
-// Use part[partkey][key].emplace_back(value)
+//Basically a hashtable of maps
 using PART =
 std::vector<std::unordered_map<std::string, std::vector<std::string>>>;
 PART parts;
@@ -59,21 +57,19 @@ void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
                        int num_mappers, MapReduce::reducer_t reduce,
                        int num_reducers, MapReduce::partitioner_t partition) {
     num_part = num_reducers;
-    parts.resize(1000);
+    parts.resize(num_reducers);
     for(int i = 1; i < argc; i++){
-        /*if((int)threadQueue.size() >= num_mappers){
+        if ((int)threadQueue.size() >= num_mappers){
             threadQueue.front().get();
             threadQueue.pop();
         }
         threadQueue.emplace(std::async(std::launch::async, map, argv[i]));
-        */
-        std::cout << argv[i];
-        map(argv[i]);
+
     }
-    /*while(!threadQueue.empty()){
+    while(!threadQueue.empty()){
         threadQueue.front().get();
         threadQueue.pop();
-    }*/
+    }
 
     std::vector<std::string> keys;
     for(int i = 0; i < (int)parts.size(); i++) {
@@ -81,10 +77,8 @@ void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
             keys.emplace_back(key.first);
         }
     }
+
     for(int i = 0; i < (int)keys.size(); i++){
-        reduce(keys[i], getter, partition(keys[i], num_part));
-    }
-    /*for(int i = 0; i < num_part; i++){
         if((int)threadQueue.size() >= num_reducers){
             threadQueue.front().get();
             threadQueue.pop();
@@ -95,7 +89,7 @@ void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
     while(!threadQueue.empty()){
         threadQueue.front().get();
         threadQueue.pop();
-    }*/
+    }
 
 }
 
