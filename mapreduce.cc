@@ -1,16 +1,15 @@
 #include "mapreduce.hh"
 
 #include <future>
+#include <map>
 #include <queue>
 #include <string>
-#include <map>
 #include <vector>
 
 using namespace MapReduce;
 int num_part = 0;
 // Basically a hashtable of maps
-using PART =
-std::vector<std::map<std::string, std::vector<std::string>>>;
+using PART = std::vector<std::map<std::string, std::vector<std::string>>>;
 PART parts;
 std::queue<std::future<void>> threadQueue;
 std::mutex locked;
