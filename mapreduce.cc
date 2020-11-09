@@ -16,11 +16,7 @@ PART parts;
 std::queue<std::future<void>> threadQueue;
 std::mutex locked;
 
-//code to delete value, separated because it's complicated
-void deleteVal(const std::string &key, int part_num) {
 
-    parts[part_num].at(key).erase(parts[part_num].at(key).begin());
-}
 
 //Returns the hash key from hash function
 unsigned long partitioner(const std::string &key, int num_partitions) {
@@ -29,8 +25,8 @@ unsigned long partitioner(const std::string &key, int num_partitions) {
 //gets the value and deletes it from vector inside the map
 std::string getter(const std::string &key, int part_num) {
     if (!parts[part_num].at(key).empty()) {
-        std::string value = parts[part_num].at(key).front();
-        deleteVal(key, part_num);
+        std::string value = parts[part_num].at(key).back();
+        parts[part_num].at(key).pop_back();
         return value;
     }
     return "";
@@ -89,18 +85,13 @@ void MapReduce::MR_Run(int argc, char *argv[], MapReduce::mapper_t map,
 }
 
 void MapReduce::MR_Emit(const std::string &key, const std::string &value) {
+    //Get hash key for the key
     unsigned long partKey = partitioner(key, num_part);
+    //We need to lock here until insert is done
     std::lock_guard<std::mutex> lock(locked);
-    int exists = parts[partKey].count(key);
-    if (exists > 0){
-        parts[partKey][key].emplace_back(value);
-    }
-    else{
-        auto insert = std::pair<std::string, std::vector<std::string>>(key, {value});
-        parts[partKey].insert(insert);
-    }
+    parts[partKey][key].emplace_back(value);
 }
-
+//hash function
 unsigned long MapReduce::MR_DefaultHashPartition(const std::string &key,
                                                  int num_partitions) {
     unsigned long hash = std::hash<std::string>{}(key);
